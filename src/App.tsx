@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { faker } from '@faker-js/faker';
-import { TodoItem } from './TodoItem';
-import { nanoid } from 'nanoid';
 
 const generateFakeTodoItem = () => ({
   label: faker.hacker.phrase(),
   status: faker.random.arrayElement(['open', 'done', 'archived']),
-  id: nanoid(),
+  id: faker.string.uuid(),
 });
 
 const generateNTodo = (size) => {
@@ -17,20 +15,44 @@ const initialList = [
   {
     label: 'This is my first todo item',
     status: 'open',
-    id: nanoid(),
+    id: faker.string.uuid(),
   },
   {
     label: 'This is some done todo',
     status: 'done',
-    id: nanoid(),
+    id: faker.string.uuid(),
   },
   {
     label: 'This is a really old todo',
     status: 'archived',
-    id: nanoid(),
+    id: faker.string.uuid(),
   },
   ...generateNTodo(10),
 ];
+
+const TodoItem = ({ status, label, onChecked }) => {
+  return (
+    <div
+      className={clsx('p-4 flex items-center', {
+        'bg-gray-200': status === 'archived',
+      })}
+    >
+      <span
+        className={clsx('w-full block', { 'line-through': status !== 'open' })}
+      >
+        {label}
+      </span>
+      <input
+        checked={status !== 'open'}
+        disabled={status === 'archived'}
+        type="checkbox"
+        className="rounded text-pink-500 ml-8 cursor-pointer disabled:cursor-not-allowed disabled:bg-black disabled:hover:bg-black"
+        onChange={() => onChecked(status === 'open' ? 'done' : 'open')}
+      />
+    </div>
+  );
+};
+
 
 function App() {
   const [todoList, setTodoList] = useState(initialList);
